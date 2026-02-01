@@ -675,9 +675,9 @@
             clearInterval(sessionTimer);
             clearInterval(messageInterval);
             
-            const realMinutes = Math.round((Date.now() - startTime) / 60000);
+            const realMinutes = (Date.now() - startTime) / 60000;
             const mode = modes[currentMode];
-            const perceivedMinutes = Math.round(realMinutes * mode.perceptionMultiplier);
+            const perceivedMinutes = realMinutes * mode.perceptionMultiplier;
             
             document.getElementById('startBtn').style.display = 'inline-block';
             document.getElementById('stopBtn').style.display = 'none';
@@ -746,12 +746,15 @@
             if (minutes < 1) {
                 const seconds = Math.round(minutes * 60);
                 return `${seconds} сек`;
-            } else if (minutes === 1) {
-                return '1 минута';
-            } else if (minutes < 5) {
-                return `${minutes} минуты`;
             } else {
-                return `${minutes} минут`;
+                const roundedMinutes = Math.round(minutes);
+                if (roundedMinutes === 1) {
+                    return '1 минута';
+                } else if (roundedMinutes >= 2 && roundedMinutes <= 4) {
+                    return `${roundedMinutes} минуты`;
+                } else {
+                    return `${roundedMinutes} минут`;
+                }
             }
         }
         
