@@ -391,7 +391,7 @@
         let userId = null;
         let referrerId = null;
         
-        // ВАЖНО: Вставьте сюда URL вашего Google Apps Script
+        // ВАЖНО: URL вашего Google Apps Script (УЖЕ НАСТРОЕН ✅)
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_uiiM3aFLlfJKV2XsFJcyhJPgqtNtFEoX2Omsl--WPVJ8QscPMCGolBBglg4Idogy/exec';
         
         // Инициализация пользователя и реферальной системы
@@ -402,6 +402,9 @@
             if (!userId) {
                 userId = generateUserId();
                 localStorage.setItem('userId', userId);
+                console.log('✅ Создан новый пользователь:', userId);
+            } else {
+                console.log('✅ Пользователь загружен:', userId);
             }
             
             // Проверяем, есть ли реферальный код в URL
@@ -409,6 +412,8 @@
             const refCode = urlParams.get('ref');
             
             if (refCode && refCode !== userId) {
+                console.log('🔗 Обнаружен реферальный код:', refCode);
+                
                 // Сохраняем, кто нас пригласил (только если ещё не сохранено)
                 if (!localStorage.getItem('referrerId')) {
                     localStorage.setItem('referrerId', refCode);
@@ -418,24 +423,30 @@
                     incrementReferralCount(refCode);
                     
                     // Отправляем данные на сервер
-                    sendToServer({
+                    const userData = {
                         action: 'new_user',
                         userId: userId,
                         referrerId: refCode,
                         sessionCount: 0
-                    });
+                    };
+                    console.log('📤 Отправка данных на сервер:', userData);
+                    sendToServer(userData);
                     
                     // Показываем приветственное сообщение
                     showToast('Добро пожаловать! Вас пригласил друг 🎉');
+                } else {
+                    console.log('ℹ️ Реферер уже сохранён ранее');
                 }
             } else if (isNewUser) {
                 // Новый пользователь без реферала
-                sendToServer({
+                const userData = {
                     action: 'new_user',
                     userId: userId,
                     referrerId: null,
                     sessionCount: 0
-                });
+                };
+                console.log('📤 Новый пользователь (без реферала):', userData);
+                sendToServer(userData);
             }
             
             // Отображаем реферальный код
@@ -448,14 +459,22 @@
         
         // Отправка данных на сервер (Google Sheets)
         async function sendToServer(data) {
-            // Если URL не настроен, пропускаем отправку
+            // Если URL не настроен, показываем предупреждение
             if (GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
-                console.log('Google Script URL не настроен. Данные:', data);
+                console.warn('⚠️ Google Script URL не настроен!');
+                console.log('📝 Данные для отправки:', data);
+                console.log('ℹ️ Чтобы данные сохранялись в Google Sheets:');
+                console.log('   1. Откройте Google Sheets → Расширения → Apps Script');
+                console.log('   2. Вставьте код из google-apps-script-fixed.js');
+                console.log('   3. Разверните веб-приложение');
+                console.log('   4. Скопируйте URL и замените в строке 395');
                 return;
             }
             
+            console.log('📤 Отправка данных на сервер...');
+            
             try {
-                await fetch(GOOGLE_SCRIPT_URL, {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors', // Важно для Google Apps Script
                     headers: {
@@ -463,8 +482,9 @@
                     },
                     body: JSON.stringify(data)
                 });
+                console.log('✅ Данные отправлены успешно');
             } catch (error) {
-                console.error('Ошибка отправки данных:', error);
+                console.error('❌ Ошибка отправки данных:', error);
             }
         }
         
