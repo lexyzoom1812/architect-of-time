@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, rgba(46, 134, 222, 1) 0%, rgba(84, 160, 255, 1) 50%, rgba(72, 219, 251, 1) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -67,8 +67,8 @@
         }
         
         .mode-btn.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #2E86DE;
+            background: linear-gradient(180deg, rgba(46, 134, 222, 1) 0%, rgba(84, 160, 255, 1) 50%, rgba(72, 219, 251, 1) 100%);
             color: white;
         }
         
@@ -132,13 +132,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, rgba(46, 134, 222, 1) 0%, rgba(84, 160, 255, 1) 50%, rgba(72, 219, 251, 1) 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(46, 134, 222, 0.4);
         }
         
         .btn-secondary {
@@ -232,7 +232,7 @@
         }
         
         .btn-share {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, rgba(46, 134, 222, 1) 0%, rgba(84, 160, 255, 1) 50%, rgba(72, 219, 251, 1) 100%);
             color: white;
             padding: 12px 30px;
             border: none;
@@ -248,6 +248,8 @@
         
         .btn-share:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 134, 222, 0.4);
+        }
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         
@@ -266,7 +268,7 @@
             border-radius: 6px;
             font-family: 'Courier New', monospace;
             font-weight: 600;
-            color: #667eea;
+            color: #2E86DE;
             margin: 10px 0;
         }
         
@@ -284,7 +286,7 @@
         .referral-count {
             font-size: 1.5em;
             font-weight: 600;
-            color: #667eea;
+            color: #2E86DE;
         }
         
         .referral-label {
@@ -362,9 +364,9 @@
         <div class="share-section">
             <div class="share-title">🎁 Поделитесь с друзьями</div>
             <div class="share-subtitle">Помогите другим обрести контроль над временем</div>
-            <button class="btn-share" id="shareBtn">
-                <span>📤</span>
-                <span>Поделиться</span>
+            <button class="btn-share" id="shareTelegramBtn" style="background: linear-gradient(180deg, #0088cc 0%, #00a0dc 100%);">
+                <span>📱</span>
+                <span>Поделиться в Telegram</span>
             </button>
             
             <div class="referral-info">
@@ -380,6 +382,13 @@
                         <div class="referral-label">всего сессий</div>
                     </div>
                 </div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="https://t.me/ваш_канал" target="_blank" style="color: #2E86DE; text-decoration: none; font-size: 0.9em; display: inline-flex; align-items: center; gap: 5px;">
+                    <span>📱</span>
+                    <span>Перейти в Telegram канал</span>
+                </a>
             </div>
         </div>
         
@@ -533,28 +542,14 @@
         }
         
         // Кнопка "Поделиться"
-        document.getElementById('shareBtn').addEventListener('click', async () => {
+        // Кнопка "Поделиться в Telegram"
+        document.getElementById('shareTelegramBtn').addEventListener('click', () => {
             const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${userId}`;
             const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПопробуй бесплатно:`;
             
-            // Попытка использовать Web Share API (работает на мобильных)
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Архитектор Времени',
-                        text: shareText,
-                        url: shareUrl
-                    });
-                } catch (err) {
-                    // Пользователь отменил шаринг
-                    if (err.name !== 'AbortError') {
-                        copyToClipboard(shareUrl);
-                    }
-                }
-            } else {
-                // Fallback: копируем ссылку
-                copyToClipboard(shareUrl);
-            }
+            // Открываем Telegram с предзаполненным текстом
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+            window.open(telegramUrl, '_blank');
         });
         
         // Копирование в буфер обмена
