@@ -474,11 +474,13 @@
                 console.log('   1. Откройте Google Sheets → Расширения → Apps Script');
                 console.log('   2. Вставьте код из google-apps-script-fixed.js');
                 console.log('   3. Разверните веб-приложение');
-                console.log('   4. Скопируйте URL и замените в строке 395');
+                console.log('   4. Скопируйте URL и замените в строке 402');
                 return;
             }
             
             console.log('📤 Отправка данных на сервер...');
+            console.log('📍 URL:', GOOGLE_SCRIPT_URL);
+            console.log('📦 Данные:', JSON.stringify(data, null, 2));
             
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -489,7 +491,8 @@
                     },
                     body: JSON.stringify(data)
                 });
-                console.log('✅ Данные отправлены успешно');
+                console.log('✅ Запрос отправлен (mode: no-cors - ответ не доступен)');
+                console.log('ℹ️ Проверьте Google Sheets - данные должны появиться там');
             } catch (error) {
                 console.error('❌ Ошибка отправки данных:', error);
             }
@@ -735,20 +738,26 @@
             let insightText = '';
             
             if (currentMode === 'flow') {
+                // Режим потока: время ощущается быстрее (0.7x)
+                // Реально: 10 мин → Ощущение: 7 мин
                 const efficiency = realMinutes > 0 ? Math.round((1 / mode.perceptionMultiplier - 1) * 100) : 0;
                 const realText = formatTime(realMinutes);
                 const perceivedText = formatTime(perceivedMinutes);
-                insightText = `🎯 Невероятная продуктивность! За ${realText} реального времени вы сделали столько, что обычно занимает гораздо больше. Ощущение, будто прошло всего ${perceivedText}. Эффективность выросла на ${efficiency}%!`;
+                insightText = `🎯 Невероятная продуктивность! Вы работали ${realText}, но время пролетело так быстро — ощущалось как ${perceivedText}. Эффективность выросла на ${efficiency}%!`;
             } else if (currentMode === 'expand') {
+                // Режим расширения: время ощущается медленнее (1.5x)
+                // Реально: 10 мин → Ощущение: 15 мин
                 const richness = mode.perceptionMultiplier;
                 const realText = formatTime(realMinutes);
                 const perceivedText = formatTime(perceivedMinutes);
-                insightText = `🌟 Прекрасно! За ${realText} вы прожили ${perceivedText} богатого опыта. Ваше восприятие расширилось в ${richness} раза — каждая секунда была наполнена смыслом.`;
+                insightText = `🌟 Прекрасно! За ${realText} реального времени вы прожили ${perceivedText} богатого опыта. Ваше восприятие расширилось в ${richness} раза — каждая секунда была наполнена смыслом.`;
             } else {
+                // Режим сжатия: время ощущается быстрее (0.5x)
+                // Реально: 10 мин → Ощущение: 5 мин
                 const compression = Math.round((1 - mode.perceptionMultiplier) * 100);
                 const realText = formatTime(realMinutes);
                 const perceivedText = formatTime(perceivedMinutes);
-                insightText = `⏰ Ожидание пролетело незаметно! ${realText} ожидания ощущались как ${perceivedText}. Неприятное время сжалось на ${compression}% — и вы даже не заметили, как оно прошло.`;
+                insightText = `⏰ Ожидание пролетело незаметно! Вы ждали ${realText}, но ощущалось как всего ${perceivedText}. Время сжалось на ${compression}%!`;
             }
             
             document.getElementById('insight').textContent = insightText;
@@ -761,13 +770,7 @@
                 return `${seconds} сек`;
             } else {
                 const roundedMinutes = Math.round(minutes);
-                if (roundedMinutes === 1) {
-                    return '1 минута';
-                } else if (roundedMinutes >= 2 && roundedMinutes <= 4) {
-                    return `${roundedMinutes} минуты`;
-                } else {
-                    return `${roundedMinutes} минут`;
-                }
+                return `${roundedMinutes} мин.`;
             }
         }
         
