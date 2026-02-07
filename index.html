@@ -351,11 +351,11 @@
             
             <div class="stats">
                 <div class="stat-card">
-                    <div class="stat-value" id="realTime">0 мин</div>
+                    <div class="stat-value" id="realTime">0 сек</div>
                     <div class="stat-label">Реальное время</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="perceivedTime">0 мин</div>
+                    <div class="stat-value" id="perceivedTime">0 сек</div>
                     <div class="stat-label">Ощущаемое время</div>
                 </div>
             </div>
@@ -691,14 +691,15 @@
             clearInterval(sessionTimer);
             clearInterval(messageInterval);
             
-            const realMinutes = (Date.now() - startTime) / 60000;
+            // Работаем в СЕКУНДАХ, а не минутах!
+            const realSeconds = Math.floor((Date.now() - startTime) / 1000);
             const mode = modes[currentMode];
-            const perceivedMinutes = realMinutes * mode.perceptionMultiplier;
+            const perceivedSeconds = Math.floor(realSeconds * mode.perceptionMultiplier);
             
             document.getElementById('startBtn').style.display = 'inline-block';
             document.getElementById('stopBtn').style.display = 'none';
             
-            showInsight(realMinutes, perceivedMinutes);
+            showInsight(realSeconds, perceivedSeconds);
             
             // Сохраняем завершённую сессию
             saveSession();
@@ -713,14 +714,14 @@
             document.getElementById('timer').textContent = 
                 `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
             
-            const realMinutes = elapsed / 60000;
+            // Работаем в секундах!
+            const realSeconds = Math.floor(elapsed / 1000);
             const mode = modes[currentMode];
-            const perceivedMinutes = realMinutes * mode.perceptionMultiplier;
+            const perceivedSeconds = Math.floor(realSeconds * mode.perceptionMultiplier);
             
-            document.getElementById('realTime').textContent = 
-                realMinutes < 1 ? `${Math.round(realMinutes * 60)} сек` : `${Math.round(realMinutes)} мин`;
-            document.getElementById('perceivedTime').textContent = 
-                perceivedMinutes < 1 ? `${Math.round(perceivedMinutes * 60)} сек` : `${Math.round(perceivedMinutes)} мин`;
+            // Используем formatTime для единообразного отображения
+            document.getElementById('realTime').textContent = formatTime(realSeconds);
+            document.getElementById('perceivedTime').textContent = formatTime(perceivedSeconds);
             
             const progress = (seconds % 60) / 60 * 100;
             document.getElementById('progressFill').style.width = progress + '%';
@@ -733,30 +734,30 @@
             messageIndex++;
         }
         
-        function showInsight(realMinutes, perceivedMinutes) {
+        function showInsight(realSeconds, perceivedSeconds) {
             const mode = modes[currentMode];
             let insightText = '';
             
             if (currentMode === 'flow') {
                 // Режим потока: время ощущается быстрее (0.7x)
-                // Реально: 10 мин → Ощущение: 7 мин
-                const efficiency = realMinutes > 0 ? Math.round((1 / mode.perceptionMultiplier - 1) * 100) : 0;
-                const realText = formatTime(realMinutes);
-                const perceivedText = formatTime(perceivedMinutes);
+                // Реально: 100 сек → Ощущение: 70 сек
+                const efficiency = realSeconds > 0 ? Math.round((1 / mode.perceptionMultiplier - 1) * 100) : 0;
+                const realText = formatTime(realSeconds);
+                const perceivedText = formatTime(perceivedSeconds);
                 insightText = `🎯 Невероятная продуктивность! Вы работали ${realText}, но время пролетело так быстро — ощущалось как ${perceivedText}. Эффективность выросла на ${efficiency}%!`;
             } else if (currentMode === 'expand') {
                 // Режим расширения: время ощущается медленнее (1.5x)
-                // Реально: 10 мин → Ощущение: 15 мин
+                // Реально: 100 сек → Ощущение: 150 сек
                 const richness = mode.perceptionMultiplier;
-                const realText = formatTime(realMinutes);
-                const perceivedText = formatTime(perceivedMinutes);
+                const realText = formatTime(realSeconds);
+                const perceivedText = formatTime(perceivedSeconds);
                 insightText = `🌟 Прекрасно! За ${realText} реального времени вы прожили ${perceivedText} богатого опыта. Ваше восприятие расширилось в ${richness} раза — каждая секунда была наполнена смыслом.`;
             } else {
                 // Режим сжатия: время ощущается быстрее (0.5x)
-                // Реально: 10 мин → Ощущение: 5 мин
+                // Реально: 100 сек → Ощущение: 50 сек
                 const compression = Math.round((1 - mode.perceptionMultiplier) * 100);
-                const realText = formatTime(realMinutes);
-                const perceivedText = formatTime(perceivedMinutes);
+                const realText = formatTime(realSeconds);
+                const perceivedText = formatTime(perceivedSeconds);
                 insightText = `⏰ Ожидание пролетело незаметно! Вы ждали ${realText}, но ощущалось как всего ${perceivedText}. Время сжалось на ${compression}%!`;
             }
             
@@ -764,13 +765,21 @@
             document.getElementById('insight').classList.add('show');
         }
         
-        function formatTime(minutes) {
-            if (minutes < 1) {
-                const seconds = Math.round(minutes * 60);
-                return `${seconds} сек`;
+        function formatTime(totalSeconds) {
+            // Функция теперь принимает СЕКУНДЫ, а не минуты!
+            if (totalSeconds < 60) {
+                // Меньше минуты - показываем секунды
+                return `${totalSeconds} сек`;
             } else {
-                const roundedMinutes = Math.round(minutes);
-                return `${roundedMinutes} мин.`;
+                // 60+ секунд - показываем минуты и секунды
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                
+                if (seconds === 0) {
+                    return `${minutes} мин.`;
+                } else {
+                    return `${minutes} мин. ${seconds} сек`;
+                }
             }
         }
         
@@ -779,8 +788,8 @@
             clearInterval(messageInterval);
             document.getElementById('timer').textContent = '00:00';
             document.getElementById('perceptionMsg').textContent = modes[currentMode].description;
-            document.getElementById('realTime').textContent = '0 мин';
-            document.getElementById('perceivedTime').textContent = '0 мин';
+            document.getElementById('realTime').textContent = '0 сек';
+            document.getElementById('perceivedTime').textContent = '0 сек';
             document.getElementById('progressFill').style.width = '0%';
             document.getElementById('startBtn').style.display = 'inline-block';
             document.getElementById('stopBtn').style.display = 'none';
