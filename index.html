@@ -408,6 +408,7 @@
             // Получаем или создаём ID пользователя
             const isNewUser = !localStorage.getItem('userId');
             userId = localStorage.getItem('userId');
+            
             if (!userId) {
                 userId = generateUserId();
                 localStorage.setItem('userId', userId);
@@ -420,6 +421,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             
+            // Проверяем, отправляли ли мы уже данные на сервер
+            const dataSentToServer = localStorage.getItem('dataSentToServer');
+            
             if (refCode && refCode !== userId) {
                 console.log('🔗 Обнаружен реферальный код:', refCode);
                 
@@ -430,32 +434,41 @@
                     
                     // Увеличиваем счётчик приглашённых у реферера
                     incrementReferralCount(refCode);
-                    
-                    // Отправляем данные на сервер
+                } else {
+                    referrerId = localStorage.getItem('referrerId');
+                }
+                
+                // Отправляем данные на сервер (ТОЛЬКО ОДИН РАЗ!)
+                if (!dataSentToServer) {
                     const userData = {
                         action: 'new_user',
                         userId: userId,
                         referrerId: refCode,
-                        sessionCount: 0
+                        sessionCount: 0,
+                        telegram: '—'
                     };
-                    console.log('📤 Отправка данных на сервер:', userData);
+                    console.log('📤 Отправка данных на сервер (с рефералом):', userData);
                     sendToServer(userData);
+                    localStorage.setItem('dataSentToServer', 'true');
                     
                     // Показываем приветственное сообщение
                     showToast('Добро пожаловать! Вас пригласил друг 🎉');
                 } else {
-                    console.log('ℹ️ Реферер уже сохранён ранее');
+                    console.log('ℹ️ Данные уже отправлены ранее');
                 }
-            } else if (isNewUser) {
-                // Новый пользователь без реферала
+                
+            } else if (isNewUser || !dataSentToServer) {
+                // Новый пользователь без реферала ИЛИ данные ещё не отправлены
                 const userData = {
                     action: 'new_user',
                     userId: userId,
                     referrerId: null,
-                    sessionCount: 0
+                    sessionCount: 0,
+                    telegram: '—'
                 };
                 console.log('📤 Новый пользователь (без реферала):', userData);
                 sendToServer(userData);
+                localStorage.setItem('dataSentToServer', 'true');
             }
             
             // Отображаем реферальный код
@@ -545,12 +558,22 @@
         }
         
         // Кнопка "Поделиться в Telegram"
+        // СТРОКА 548-556: Кнопка "Поделиться в Telegram"
         document.getElementById('shareTelegramBtn').addEventListener('click', () => {
             const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${userId}`;
-            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПОПРОБУЙ БЕСПЛАТНО`;
             
-            // Открываем Telegram с предзаполненным текстом
-            // URL будет автоматически добавлен Telegram как кликабельная ссылка
+            // ВАЖНО: НЕ включаем URL в текст, только в параметр url=
+            // Telegram автоматически добавит ссылку ВНИЗУ
+            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!
+
+⚡ Работай быстрее
+🌸 Твори глубже
+⏩ Жди меньше
+
+ПОПРОБУЙ БЕСПЛАТНО 👇`;
+            
+            // Telegram API: url идёт первым, text вторым
+            // Ссылка появится ВНИЗУ сообщения как кликабельная кнопка
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
             window.open(telegramUrl, '_blank');
         });
