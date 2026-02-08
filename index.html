@@ -34,14 +34,14 @@
             text-align: center;
             color: #2d3748;
             margin-bottom: 5px;
-            font-size: 2em;
+            font-size: 1.6em;
         }
         
         .subtitle {
             text-align: center;
             color: #718096;
             margin-bottom: 20px;
-            font-size: 0.95em;
+            font-size: 0.85em;
         }
         
         .mode-selector {
@@ -52,13 +52,16 @@
         }
         
         .mode-btn {
-            padding: 20px;
+            padding: 12px 15px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             background: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .mode-btn:hover {
@@ -73,13 +76,12 @@
         }
         
         .mode-icon {
-            font-size: 2em;
-            margin-bottom: 8px;
+            font-size: 1.5em;
         }
         
         .mode-title {
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
         
         .session-area {
@@ -545,9 +547,10 @@
         // Кнопка "Поделиться в Telegram"
         document.getElementById('shareTelegramBtn').addEventListener('click', () => {
             const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${userId}`;
-            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПопробуй бесплатно: ${shareUrl}`;
+            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПОПРОБУЙ БЕСПЛАТНО`;
             
-            // Открываем Telegram с предзаполненным текстом (ссылка будет кликабельной)
+            // Открываем Telegram с предзаполненным текстом
+            // URL будет автоматически добавлен Telegram как кликабельная ссылка
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
             window.open(telegramUrl, '_blank');
         });
