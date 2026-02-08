@@ -23,8 +23,8 @@
         
         .container {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 40px;
+            border-radius: 20px;
+            padding: 25px;
             max-width: 600px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -33,22 +33,22 @@
         h1 {
             text-align: center;
             color: #2d3748;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             font-size: 2em;
         }
         
         .subtitle {
             text-align: center;
             color: #718096;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 0.95em;
         }
         
         .mode-selector {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         
         .mode-btn {
@@ -101,7 +101,7 @@
             font-size: 4em;
             font-weight: 300;
             color: #2d3748;
-            margin: 30px 0;
+            margin: 15px 0;
             font-variant-numeric: tabular-nums;
         }
         
@@ -109,7 +109,7 @@
             text-align: center;
             font-size: 1.1em;
             color: #4a5568;
-            margin: 20px 0;
+            margin: 15px 0;
             min-height: 60px;
             font-style: italic;
         }
@@ -118,7 +118,7 @@
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         
         .btn {
@@ -168,8 +168,8 @@
         .insight {
             background: #f7fafc;
             border-left: 4px solid #667eea;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 12px;
+            margin: 15px 0;
             border-radius: 4px;
             display: none;
         }
@@ -187,13 +187,13 @@
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 15px;
         }
         
         .stat-card {
             background: #f7fafc;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             text-align: center;
         }
@@ -211,8 +211,8 @@
         }
         
         .share-section {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 15px;
             background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
             border-radius: 12px;
             text-align: center;
@@ -222,13 +222,13 @@
             font-size: 1.1em;
             font-weight: 600;
             color: #2d3748;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .share-subtitle {
             font-size: 0.9em;
             color: #718096;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .btn-share {
@@ -254,8 +254,8 @@
         }
         
         .referral-info {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             background: white;
             border-radius: 8px;
             font-size: 0.9em;
@@ -264,19 +264,19 @@
         .referral-code {
             display: inline-block;
             background: #f7fafc;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
             font-weight: 600;
             color: #2E86DE;
-            margin: 10px 0;
+            margin: 8px 0;
         }
         
         .referral-stats {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 12px;
         }
         
         .referral-stat {
@@ -399,7 +399,7 @@
         let referrerId = null;
         
         // ВАЖНО: URL вашего Google Apps Script (УЖЕ НАСТРОЕН ✅)
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpnRfyYE-Jw6kFyWcXkVJqMK7VNmFK96IM40AQx5UDbGfhKp0VHOTmfQv7OXT1j3cl/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNwFJvL9WX3f37pRkwezUEdhct4MIMFLHrOv4T1ETuIrcvLFjFw9-pic9zgV2dCJPk/exec';
         
         // Инициализация пользователя и реферальной системы
         function initReferralSystem() {
@@ -542,13 +542,12 @@
             });
         }
         
-        // Кнопка "Поделиться"
         // Кнопка "Поделиться в Telegram"
         document.getElementById('shareTelegramBtn').addEventListener('click', () => {
             const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${userId}`;
-            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПопробуй бесплатно:`;
+            const shareText = `🎯 Архитектор Времени — перепрограммируй своё восприятие времени!\n\n⚡ Работай быстрее\n🌸 Твори глубже\n⏩ Жди меньше\n\nПопробуй бесплатно: ${shareUrl}`;
             
-            // Открываем Telegram с предзаполненным текстом
+            // Открываем Telegram с предзаполненным текстом (ссылка будет кликабельной)
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
             window.open(telegramUrl, '_blank');
         });
